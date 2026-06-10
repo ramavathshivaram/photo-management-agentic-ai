@@ -236,6 +236,7 @@ function initializeDashboard() {
   fetchContacts();
   fetchPeopleClusters();
   fetchHistory();
+  fetchOrganized();
 }
 
 async function fetchMetrics() {
@@ -1626,3 +1627,75 @@ runWorkflow({
   delivery_method: "gmail"
 });
 */
+
+async function fetchOrganized() {
+  const res = await authFetch("/api/organized");
+
+  if (!res) return;
+
+  const data = await res.json();
+
+  renderOrganized(data);
+}
+
+function renderNode(node, level = 0) {
+  if (node.type === "photo") {
+    return `
+  <div class="photo-item">
+    <img src="${node.url}" alt="${node.name}">
+
+    <div class="photo-info">
+      <div class="photo-name" title="${node.name}">
+        ${node.name}
+      </div>
+    </div>
+  </div>
+`;
+  }
+
+  const children = (node.children || [])
+    .map((child) => renderNode(child, level + 1))
+    .join("");
+
+  return `
+  <div class="folder-card level-${level}">
+    <div class="folder-header">
+      <button class="folder-toggle">▼</button>
+
+      <div class="folder-icon">📁</div>
+
+      <span class="folder-name">
+        ${node.name}
+      </span>
+
+      <span class="folder-count">
+        ${(node.children || []).length}
+      </span>
+    </div>
+
+    <div class="folder-body">
+      ${children}
+    </div>
+  </div>
+`;
+}
+
+function renderOrganized(data) {
+  const container = document.getElementById("organized-container");
+
+  container.innerHTML = data.map((node) => renderNode(node)).join("");
+
+  container.querySelectorAll(".folder-toggle").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".folder-card");
+
+      const body = card.querySelector(":scope > .folder-body");
+
+      const collapsed = body.style.display === "none";
+
+      body.style.display = collapsed ? "block" : "none";
+
+      btn.textContent = collapsed ? "▼" : "▶";
+    });
+  });
+}

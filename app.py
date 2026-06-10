@@ -2701,6 +2701,54 @@ def split_cluster():
     finally:
         conn.close()
 
+@app.route("/organized_photos/<path:filename>")
+def organized_photo(filename):
+    return send_from_directory(
+        os.path.join(app.root_path, "organized_photos"),
+        filename
+    )
+
+
+@app.route("/api/organized", methods=["GET"])
+@login_required
+def organized():
+    root = os.path.join(app.root_path, "organized_photos")
+
+    if not os.path.exists(root):
+        return jsonify([])
+
+    return jsonify(build_tree(root, ""))
+
+
+def build_tree(path, relative_path):
+    nodes = []
+
+    for name in sorted(os.listdir(path)):
+        full_path = os.path.join(path, name)
+
+        if os.path.isdir(full_path):
+            nodes.append({
+                "type": "folder",
+                "name": name,
+                "children": build_tree(
+                    full_path,
+                    os.path.join(relative_path, name)
+                )
+            })
+
+        else:
+            if name.lower().endswith(
+                (".jpg", ".jpeg", ".png", ".webp")
+            ):
+                nodes.append({
+                    "type": "photo",
+                    "name": name,
+                    "url": "/organized_photos/" +
+                           os.path.join(relative_path, name)
+                           .replace("\\", "/")
+                })
+
+    return nodes
 
 if __name__ == "__main__":
 
