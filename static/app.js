@@ -17,7 +17,9 @@ const views = document.querySelectorAll(".view-section");
 // Metrics
 const metricTotalPhotos = document.getElementById("metric-total-photos");
 const metricTotalPeople = document.getElementById("metric-total-people");
-const metricSharedDeliveries = document.getElementById("metric-shared-deliveries");
+const metricSharedDeliveries = document.getElementById(
+  "metric-shared-deliveries",
+);
 const metricUntaggedFaces = document.getElementById("metric-untagged-faces");
 const metricEmails = document.getElementById("metric-emails");
 const metricWhatsapp = document.getElementById("metric-whatsapp");
@@ -48,7 +50,6 @@ const faceSearchBtn = document.getElementById("face-search-btn");
 const faceSearchFile = document.getElementById("face-search-file");
 const faceMatchStatus = document.getElementById("face-match-status");
 const clearFaceSearchBtn = document.getElementById("clear-face-search-btn");
-
 
 // Chat Agent
 const chatThread = document.getElementById("chat-thread");
@@ -95,7 +96,7 @@ if (authToggleLink) {
     e.preventDefault();
     loginError.style.display = "none";
     loginSuccess.style.display = "none";
-    
+
     if (authMode === "login") {
       authMode = "register";
       authTitle.innerText = "AI Photo Command Center Register";
@@ -116,23 +117,23 @@ loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   loginError.style.display = "none";
   loginSuccess.style.display = "none";
-  
+
   const user = document.getElementById("username").value.trim();
   const pass = document.getElementById("password").value.trim();
-  
+
   try {
     const url = authMode === "login" ? "/api/auth/login" : "/api/auth/register";
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: user, password: pass })
+      body: JSON.stringify({ username: user, password: pass }),
     });
-    
+
     const data = await res.json();
     if (!res.ok) {
       throw new Error(data.error || "Authentication failed");
     }
-    
+
     if (authMode === "login") {
       token = data.token;
       username = data.username;
@@ -140,13 +141,14 @@ loginForm.addEventListener("submit", async (e) => {
       localStorage.setItem("drishyamitra_username", username);
       updateScreenVisibility();
     } else {
-      loginSuccess.innerText = data.message || "Registration successful! Please login.";
+      loginSuccess.innerText =
+        data.message || "Registration successful! Please login.";
       loginSuccess.style.display = "block";
-      
+
       // Reset input fields
       document.getElementById("username").value = "";
       document.getElementById("password").value = "";
-      
+
       // Toggle back to login state
       authMode = "login";
       authTitle.innerText = "AI Photo Command Center Login";
@@ -172,7 +174,7 @@ logoutBtn.addEventListener("click", () => {
 async function authFetch(url, options = {}) {
   options.headers = options.headers || {};
   options.headers["Authorization"] = `Bearer ${token}`;
-  
+
   const res = await fetch(url, options);
   if (res.status === 401) {
     // Session expired or invalid
@@ -185,7 +187,7 @@ async function authFetch(url, options = {}) {
 }
 
 // ----------------- TAB NAVIGATION LOGIC -----------------
-navItems.forEach(item => {
+navItems.forEach((item) => {
   item.addEventListener("click", () => {
     const viewName = item.getAttribute("data-view");
     switchView(viewName);
@@ -194,7 +196,7 @@ navItems.forEach(item => {
 
 function switchView(viewName) {
   // Update nav active styles
-  navItems.forEach(nav => {
+  navItems.forEach((nav) => {
     if (nav.getAttribute("data-view") === viewName) {
       nav.classList.add("active");
     } else {
@@ -203,14 +205,14 @@ function switchView(viewName) {
   });
 
   // Switch view displays
-  views.forEach(v => {
+  views.forEach((v) => {
     if (v.id === `view-${viewName}`) {
       v.style.display = "flex";
     } else {
       v.style.display = "none";
     }
   });
-  
+
   // Refresh contents dynamically on view change
   if (viewName === "photos") {
     fetchPhotos(filterPerson.value.trim(), filterDate.value);
@@ -236,17 +238,18 @@ function initializeDashboard() {
   fetchHistory();
 }
 
-
 async function fetchMetrics() {
   const res = await authFetch("/api/dashboard/metrics");
   if (!res) return;
   const data = await res.json();
-  
+
   if (metricTotalPhotos) metricTotalPhotos.innerText = data.total_photos;
   if (metricTotalPeople) metricTotalPeople.innerText = data.total_people;
-  if (metricSharedDeliveries) metricSharedDeliveries.innerText = data.total_delivered;
-  if (metricUntaggedFaces) metricUntaggedFaces.innerText = data.untagged_faces || 0;
-  
+  if (metricSharedDeliveries)
+    metricSharedDeliveries.innerText = data.total_delivered;
+  if (metricUntaggedFaces)
+    metricUntaggedFaces.innerText = data.untagged_faces || 0;
+
   // Update hidden binds to prevent error
   if (metricEmails) metricEmails.innerText = data.emails_sent;
   if (metricWhatsapp) metricWhatsapp.innerText = data.whatsapp_deliveries;
@@ -259,35 +262,35 @@ async function fetchPhotos(person = "", date = "") {
   if (person) params.push(`person=${encodeURIComponent(person)}`);
   if (date) params.push(`date=${encodeURIComponent(date)}`);
   if (params.length > 0) url += "?" + params.join("&");
-  
+
   const res = await authFetch(url);
   if (!res) return;
   const photos = await res.json();
-  
+
   galleryGrid.innerHTML = "";
   if (photos.length === 0) {
     galleryGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 3rem;">No photos match the selected filters.</div>`;
     return;
   }
-  
-  photos.forEach(photo => {
+
+  photos.forEach((photo) => {
     const card = document.createElement("div");
     card.className = "photo-card";
-    
+
     // Draw photo layout and face overlays
     let facesHtml = "";
-    photo.faces.forEach(face => {
+    photo.faces.forEach((face) => {
       // Bounding box percentages coordinates overlay
-      const labelText = `${face.label}${face.confidence && face.confidence < 1 ? ' (' + Math.round(face.confidence * 100) + '%)' : ''}`;
+      const labelText = `${face.label}${face.confidence && face.confidence < 1 ? " (" + Math.round(face.confidence * 100) + "%)" : ""}`;
       facesHtml += `
         <div class="face-box" 
              style="left: calc(${face.x}% / 5.5); top: calc(${face.y}% / 4.5); width: calc(${face.w}% / 5.5); height: calc(${face.h}% / 4.5);"
              data-label="${labelText}"
-             onclick="openLabelModal(${face.id}, '${face.label === 'Unknown' ? '' : face.label}')">
+             onclick="openLabelModal(${face.id}, '${face.label === "Unknown" ? "" : face.label}')">
         </div>
       `;
     });
-    
+
     card.innerHTML = `
       <div class="img-container">
         <button class="delete-photo-btn" onclick="deletePhoto(${photo.id})" title="Delete Photo">&times;</button>
@@ -298,7 +301,7 @@ async function fetchPhotos(person = "", date = "") {
         <div class="photo-meta-title" title="${photo.original_filename}">${photo.original_filename}</div>
         <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem;">Uploaded: ${photo.upload_date}</div>
         <div class="photo-labels-container">
-          ${photo.faces.map(f => `<span class="face-tag">${f.label}${f.confidence && f.confidence < 1 ? ' (' + Math.round(f.confidence * 100) + '%)' : ''}</span>`).join("")}
+          ${photo.faces.map((f) => `<span class="face-tag">${f.label}${f.confidence && f.confidence < 1 ? " (" + Math.round(f.confidence * 100) + "%)" : ""}</span>`).join("")}
         </div>
       </div>
     `;
@@ -307,11 +310,16 @@ async function fetchPhotos(person = "", date = "") {
 }
 
 async function deletePhoto(photoId) {
-  if (!confirm("Are you sure you want to delete this photo from Cloudinary and the database?")) return;
-  
+  if (
+    !confirm(
+      "Are you sure you want to delete this photo from Cloudinary and the database?",
+    )
+  )
+    return;
+
   const res = await authFetch(`/api/photos/${photoId}`, { method: "DELETE" });
   if (!res) return;
-  
+
   fetchPhotos(filterPerson.value.trim(), filterDate.value);
   fetchMetrics();
 }
@@ -340,25 +348,25 @@ uploadZone.addEventListener("drop", (e) => {
 
 async function handleFilesUpload(files) {
   if (files.length === 0) return;
-  
+
   const formData = new FormData();
   for (let i = 0; i < files.length; i++) {
     formData.append("photos", files[i]);
   }
-  
+
   progressContainer.style.display = "block";
   progressFill.style.width = "20%";
   progressFill.style.backgroundColor = "var(--accent-blue)";
   statusText.innerText = `Uploading ${files.length} file(s) to Cloudinary...`;
-  
+
   try {
     const res = await authFetch("/api/upload", {
       method: "POST",
-      body: formData
+      body: formData,
     });
-    
+
     if (!res) return;
-    
+
     if (!res.ok) {
       let errMsg = "Upload failed";
       try {
@@ -372,15 +380,15 @@ async function handleFilesUpload(files) {
       }
       throw new Error(errMsg);
     }
-    
+
     const data = await res.json();
-    
+
     progressFill.style.width = "100%";
     statusText.innerText = "Upload and facial analysis completed successfully!";
     setTimeout(() => {
       progressContainer.style.display = "none";
     }, 2000);
-    
+
     initializeDashboard();
   } catch (err) {
     statusText.innerText = `Error: ${err.message}`;
@@ -423,9 +431,9 @@ if (topSearch) {
 }
 
 // ----------------- FACE LABELS MODAL -----------------
-window.openLabelModal = function(faceId, currentLabel) {
+window.openLabelModal = function (faceId, currentLabel) {
   event.stopPropagation();
-  
+
   modalFaceId.value = faceId;
   modalLabelInput.value = currentLabel;
   labelModal.style.display = "flex";
@@ -439,40 +447,42 @@ closeModalBtn.addEventListener("click", () => {
 submitLabelBtn.addEventListener("click", async () => {
   const faceId = modalFaceId.value;
   const label = modalLabelInput.value.trim();
-  
+
   if (!label) return;
-  
+
   const res = await authFetch(`/api/faces/${faceId}/label`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ label })
+    body: JSON.stringify({ label }),
   });
-  
+
   if (!res) return;
   const data = await res.json();
-  
+
   labelModal.style.display = "none";
-  alert(`Face labeled as '${label}'. Auto-recognizer mapped ${data.propagated_count} other faces!`);
-  
+  alert(
+    `Face labeled as '${label}'. Auto-recognizer mapped ${data.propagated_count} other faces!`,
+  );
+
   initializeDashboard();
 });
 
 // ----------------- CONTACT MANAGEMENT -----------------
 contactForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  
+
   const name = document.getElementById("contact-name").value.trim();
   const email = document.getElementById("contact-email").value.trim();
   const wa = document.getElementById("contact-whatsapp").value.trim();
-  
+
   const res = await authFetch("/api/contacts", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, whatsapp_number: wa })
+    body: JSON.stringify({ name, email, whatsapp_number: wa }),
   });
-  
+
   if (!res) return;
-  
+
   contactForm.reset();
   fetchContacts();
   fetchMetrics();
@@ -482,20 +492,20 @@ async function fetchContacts() {
   const res = await authFetch("/api/contacts");
   if (!res) return;
   const contacts = await res.json();
-  
+
   contactsList.innerHTML = "";
   if (contacts.length === 0) {
     contactsList.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 1.5rem;">No contacts saved yet.</div>`;
     return;
   }
-  
-  contacts.forEach(c => {
+
+  contacts.forEach((c) => {
     const item = document.createElement("div");
     item.className = "contact-item";
     item.innerHTML = `
       <div class="contact-name">${c.name}</div>
-      <div class="contact-details">✉️ ${c.email || 'N/A'}</div>
-      <div class="contact-details">💬 ${c.whatsapp_number || 'N/A'}</div>
+      <div class="contact-details">✉️ ${c.email || "N/A"}</div>
+      <div class="contact-details">💬 ${c.whatsapp_number || "N/A"}</div>
     `;
     contactsList.appendChild(item);
   });
@@ -506,19 +516,19 @@ async function fetchHistory() {
   const res = await authFetch("/api/delivery/history");
   if (!res) return;
   const history = await res.json();
-  
+
   const tbody = document.getElementById("delivery-history-rows");
   tbody.innerHTML = "";
-  
+
   if (history.length === 0) {
     tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary);">No deliveries recorded yet.</td></tr>`;
     return;
   }
-  
-  history.forEach(row => {
+
+  history.forEach((row) => {
     const tr = document.createElement("tr");
     const photoIds = JSON.parse(row.photo_ids || "[]");
-    
+
     tr.innerHTML = `
       <td style="white-space: nowrap; color: var(--text-secondary);">${row.timestamp}</td>
       <td style="text-transform: uppercase; font-family: monospace; font-size: 0.75rem; font-weight: 600; color: var(--accent-purple);">${row.delivery_method}</td>
@@ -540,28 +550,30 @@ chatInput.addEventListener("keypress", (e) => {
 async function sendChatMessage() {
   const text = chatInput.value.trim();
   if (!text) return;
-  
+
   appendChatBubble(text, "user");
   chatInput.value = "";
-  
+
   try {
     const res = await authFetch("/api/agent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: text })
+      body: JSON.stringify({ query: text }),
     });
-    
+
     if (!res) return;
     const data = await res.json();
-    
+
     appendChatBubble(data.reply, "agent", data.photos);
-    
+
     if (data.logs && data.logs.length > 0) {
       logsContainer.style.display = "block";
-      logsTerminal.innerHTML = data.logs.map(log => `<div>> ${log}</div>`).join("");
+      logsTerminal.innerHTML = data.logs
+        .map((log) => `<div>> ${log}</div>`)
+        .join("");
       logsTerminal.scrollTop = logsTerminal.scrollHeight;
     }
-    
+
     if (data.action_type === "delivery_success") {
       initializeDashboard();
     }
@@ -573,19 +585,23 @@ async function sendChatMessage() {
 function appendChatBubble(message, sender, photos = []) {
   const bubble = document.createElement("div");
   bubble.className = `chat-msg ${sender}`;
-  
+
   let html = `<div style="white-space: pre-wrap;">${escapeHtml(message)}</div>`;
-  
+
   if (photos && photos.length > 0) {
     html += `
       <div style="display: flex; gap: 0.35rem; margin-top: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem;">
-        ${photos.map(p => `
+        ${photos
+          .map(
+            (p) => `
           <img src="${p.secure_url}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color);" alt="Thumbnail">
-        `).join("")}
+        `,
+          )
+          .join("")}
       </div>
     `;
   }
-  
+
   bubble.innerHTML = html;
   chatThread.appendChild(bubble);
   chatThread.scrollTop = chatThread.scrollHeight;
@@ -605,24 +621,62 @@ async function fetchAllPhotosForAlbums() {
   const res = await authFetch("/api/photos");
   if (!res) return;
   const photos = await res.json();
-  
+
   let birthdays = 0;
   let events = 0;
   let trips = 0;
   let festivals = 0;
   let weddings = 0;
 
-  photos.forEach(photo => {
-    const text = (photo.original_filename + " " + (photo.recognized_person || "") + " " + (photo.labels || []).join(" ")).toLowerCase();
-    if (text.includes("birthday") || text.includes("cake") || text.includes("bday")) birthdays++;
-    if (text.includes("event") || text.includes("party") || text.includes("gathering")) events++;
-    if (text.includes("trip") || text.includes("travel") || text.includes("vacation") || text.includes("tour") || text.includes("manali")) trips++;
-    if (text.includes("diwali") || text.includes("festival") || text.includes("holi") || text.includes("eid") || text.includes("diya")) festivals++;
-    if (text.includes("wedding") || text.includes("marriage") || text.includes("bride") || text.includes("groom") || text.includes("shaadi") || text.includes("priya")) weddings++;
+  photos.forEach((photo) => {
+    const text = (
+      photo.original_filename +
+      " " +
+      (photo.recognized_person || "") +
+      " " +
+      (photo.labels || []).join(" ")
+    ).toLowerCase();
+    if (
+      text.includes("birthday") ||
+      text.includes("cake") ||
+      text.includes("bday")
+    )
+      birthdays++;
+    if (
+      text.includes("event") ||
+      text.includes("party") ||
+      text.includes("gathering")
+    )
+      events++;
+    if (
+      text.includes("trip") ||
+      text.includes("travel") ||
+      text.includes("vacation") ||
+      text.includes("tour") ||
+      text.includes("manali")
+    )
+      trips++;
+    if (
+      text.includes("diwali") ||
+      text.includes("festival") ||
+      text.includes("holi") ||
+      text.includes("eid") ||
+      text.includes("diya")
+    )
+      festivals++;
+    if (
+      text.includes("wedding") ||
+      text.includes("marriage") ||
+      text.includes("bride") ||
+      text.includes("groom") ||
+      text.includes("shaadi") ||
+      text.includes("priya")
+    )
+      weddings++;
   });
 
   const albumTags = document.querySelectorAll(".album-tag");
-  albumTags.forEach(tag => {
+  albumTags.forEach((tag) => {
     const type = tag.getAttribute("data-search");
     const countSpan = tag.querySelector(".tag-count");
     if (countSpan) {
@@ -636,7 +690,7 @@ async function fetchAllPhotosForAlbums() {
 }
 
 // Bind Smart Album Clicks
-document.querySelectorAll(".album-tag").forEach(tag => {
+document.querySelectorAll(".album-tag").forEach((tag) => {
   tag.addEventListener("click", () => {
     const searchVal = tag.getAttribute("data-search");
     let filterTerm = "";
@@ -645,17 +699,14 @@ document.querySelectorAll(".album-tag").forEach(tag => {
     else if (searchVal === "trip") filterTerm = "trip";
     else if (searchVal === "diwali") filterTerm = "diwali";
     else if (searchVal === "wedding") filterTerm = "wedding";
-    
+
     if (topSearch) topSearch.value = filterTerm;
     filterPerson.value = filterTerm;
-    
+
     switchView("photos");
     fetchPhotos(filterTerm);
   });
 });
-
-
-
 
 // ----------------- QUICK ACTIONS BINDINGS -----------------
 const qaUpload = document.getElementById("qa-upload");
@@ -704,26 +755,26 @@ if (storageDetailsBtn) {
   });
 }
 
-
-
-
 // ----------------- FACE CLUSTERING & CROP LOGIC -----------------
 async function fetchPeopleClusters() {
   if (!clustersList) return;
   const res = await authFetch("/api/people/clusters");
   if (!res) return;
   const clusters = await res.json();
-  
+
   clustersList.innerHTML = "";
   if (clusters.length === 0) {
     clustersList.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 1.5rem;">No face groups identified yet.</div>`;
     return;
   }
-  
-  clusters.forEach(c => {
+
+  clusters.forEach((c) => {
     const card = document.createElement("div");
     card.className = "cluster-card";
-    const confidenceText = c.avg_confidence && c.avg_confidence < 1 ? ` • ${Math.round(c.avg_confidence * 100)}% match` : '';
+    const confidenceText =
+      c.avg_confidence && c.avg_confidence < 1
+        ? ` • ${Math.round(c.avg_confidence * 100)}% match`
+        : "";
     card.innerHTML = `
       <div class="cluster-avatar">
         <img src="${c.secure_url}" alt="${c.label}">
@@ -731,17 +782,17 @@ async function fetchPeopleClusters() {
       <div class="cluster-name">${escapeHtml(c.label)}</div>
       <div class="cluster-count">${c.photo_count} photo(s)${confidenceText}</div>
     `;
-    
+
     const img = card.querySelector("img");
     styleFaceAvatar(img, c.x, c.y, c.w, c.h);
-    
+
     card.addEventListener("click", () => {
       // Filter main gallery by this person
       filterPerson.value = c.label;
       switchView("photos");
       fetchPhotos(c.label);
     });
-    
+
     clustersList.appendChild(card);
   });
 }
@@ -765,32 +816,32 @@ function styleFaceAvatar(img, x, y, w, h) {
 // ----------------- FACE SEARCH ENGINE -----------------
 if (faceSearchBtn && faceSearchFile) {
   faceSearchBtn.addEventListener("click", () => faceSearchFile.click());
-  
+
   faceSearchFile.addEventListener("change", async () => {
     const file = faceSearchFile.files[0];
     if (!file) return;
-    
+
     const formData = new FormData();
     formData.append("face_image", file);
-    
+
     // Toggle loader styles on gallery
     galleryGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 3rem;">Scanning face embedding and searching matches...</div>`;
-    
+
     try {
       const res = await authFetch("/api/search-by-face", {
         method: "POST",
-        body: formData
+        body: formData,
       });
-      
+
       if (!res) return;
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error || "Search by face failed");
       }
-      
+
       const matchingPhotos = await res.json();
       renderMatchingPhotos(matchingPhotos);
-      
+
       if (faceMatchStatus) {
         faceMatchStatus.style.display = "flex";
       }
@@ -817,23 +868,23 @@ function renderMatchingPhotos(photos) {
     galleryGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 3rem;">No matching faces found in database (similarity distance threshold >= 0.40).</div>`;
     return;
   }
-  
-  photos.forEach(photo => {
+
+  photos.forEach((photo) => {
     const card = document.createElement("div");
     card.className = "photo-card";
-    
+
     let facesHtml = "";
-    photo.faces.forEach(face => {
-      const labelText = `${face.label}${face.confidence && face.confidence < 1 ? ' (' + Math.round(face.confidence * 100) + '%)' : ''}`;
+    photo.faces.forEach((face) => {
+      const labelText = `${face.label}${face.confidence && face.confidence < 1 ? " (" + Math.round(face.confidence * 100) + "%)" : ""}`;
       facesHtml += `
         <div class="face-box" 
              style="left: calc(${face.x}% / 5.5); top: calc(${face.y}% / 4.5); width: calc(${face.w}% / 5.5); height: calc(${face.h}% / 4.5);"
              data-label="${labelText}"
-             onclick="openLabelModal(${face.id}, '${face.label === 'Unknown' ? '' : face.label}')">
+             onclick="openLabelModal(${face.id}, '${face.label === "Unknown" ? "" : face.label}')">
         </div>
       `;
     });
-    
+
     card.innerHTML = `
       <div class="img-container">
         <button class="delete-photo-btn" onclick="deletePhoto(${photo.id})" title="Delete Photo">&times;</button>
@@ -844,7 +895,7 @@ function renderMatchingPhotos(photos) {
         <div class="photo-meta-title" title="${photo.original_filename}">${photo.original_filename}</div>
         <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem;">Uploaded: ${photo.upload_date}</div>
         <div class="photo-labels-container">
-          ${photo.faces.map(f => `<span class="face-tag">${f.label}${f.confidence && f.confidence < 1 ? ' (' + Math.round(f.confidence * 100) + '%)' : ''}</span>`).join("")}
+          ${photo.faces.map((f) => `<span class="face-tag">${f.label}${f.confidence && f.confidence < 1 ? " (" + Math.round(f.confidence * 100) + "%)" : ""}</span>`).join("")}
         </div>
       </div>
     `;
@@ -858,20 +909,20 @@ if (btnOrganizePhotos) {
     btnOrganizePhotos.disabled = true;
     const originalText = btnOrganizePhotos.innerText;
     btnOrganizePhotos.innerText = "Organizing...";
-    
+
     try {
       const res = await authFetch("/api/organize-photos", {
-        method: "POST"
+        method: "POST",
       });
       if (!res) return;
       const data = await res.json();
-      
+
       if (!res.ok) {
         throw new Error(data.error || "Organization failed");
       }
-      
+
       let msg = `${data.message}\n\nFolders created:\n`;
-      data.folders.forEach(f => {
+      data.folders.forEach((f) => {
         msg += `- organized_photos/${f}\n`;
       });
       alert(msg);
@@ -890,20 +941,20 @@ if (btnRunClustering) {
     btnRunClustering.disabled = true;
     const originalText = btnRunClustering.innerText;
     btnRunClustering.innerText = "Clustering...";
-    
+
     try {
       const res = await authFetch("/api/people/cluster-dbscan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ algorithm: "auto" })
+        body: JSON.stringify({ algorithm: "auto" }),
       });
       if (!res) return;
       const data = await res.json();
-      
+
       if (!res.ok) {
         throw new Error(data.error || "Clustering failed");
       }
-      
+
       alert(data.message);
       initializeDashboard();
     } catch (err) {
@@ -920,7 +971,8 @@ const btnShowEvaluation = document.getElementById("btn-show-evaluation");
 const btnManageClusters = document.getElementById("btn-manage-clusters");
 const evaluationModal = document.getElementById("evaluation-modal");
 const closeEvaluationBtn = document.getElementById("close-evaluation-btn");
-const containerEvaluationContent = document.getElementById("evaluation-content");
+const containerEvaluationContent =
+  document.getElementById("evaluation-content");
 
 const mergeSplitModal = document.getElementById("merge-split-modal");
 const closeMergeSplitBtn = document.getElementById("close-merge-split-btn");
@@ -934,25 +986,28 @@ const selectMergeSrc = document.getElementById("merge-src");
 const selectMergeDest = document.getElementById("merge-dest");
 const btnSubmitMerge = document.getElementById("submit-merge-btn");
 
-const containerSplitCheckboxes = document.getElementById("split-faces-checkboxes");
+const containerSplitCheckboxes = document.getElementById(
+  "split-faces-checkboxes",
+);
 const inputSplitNewName = document.getElementById("split-new-name");
 const btnSubmitSplit = document.getElementById("submit-split-btn");
 
 // 1. Evaluation Handler
 if (btnShowEvaluation) {
   btnShowEvaluation.addEventListener("click", async () => {
-    containerEvaluationContent.innerHTML = "<p>Retrieving clustering evaluation metrics from backend...</p>";
+    containerEvaluationContent.innerHTML =
+      "<p>Retrieving clustering evaluation metrics from backend...</p>";
     evaluationModal.style.display = "flex";
-    
+
     try {
       const res = await authFetch("/api/people/clustering-evaluation");
       if (!res) return;
       const data = await res.json();
-      
+
       if (!res.ok) {
         throw new Error(data.error || "Evaluation failed");
       }
-      
+
       if (data.silhouette_score === undefined) {
         containerEvaluationContent.innerHTML = `
           <div style="padding: 1rem; border-left: 4px solid var(--accent-blue); background: var(--bg-card);">
@@ -962,13 +1017,16 @@ if (btnShowEvaluation) {
         `;
         return;
       }
-      
+
       let clusterSizesHtml = "";
       for (const [name, size] of Object.entries(data.cluster_sizes)) {
-        const cohesion = data.cluster_cohesions[name] !== undefined ? ` (Cohesion: ${Math.round(data.cluster_cohesions[name] * 100)}%)` : '';
+        const cohesion =
+          data.cluster_cohesions[name] !== undefined
+            ? ` (Cohesion: ${Math.round(data.cluster_cohesions[name] * 100)}%)`
+            : "";
         clusterSizesHtml += `<li><strong>${name}:</strong> ${size} face(s)${cohesion}</li>`;
       }
-      
+
       containerEvaluationContent.innerHTML = `
         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
           <p><strong>Total Classified Faces:</strong> ${data.total_faces}</p>
@@ -1003,43 +1061,45 @@ if (btnManageClusters) {
     // Reset inputs
     inputSplitNewName.value = "";
     containerSplitCheckboxes.innerHTML = "<p>Loading face database...</p>";
-    
+
     // Open modal
     mergeSplitModal.style.display = "flex";
-    
+
     // Switch to default tab (Merge)
     switchManageTab("merge");
-    
+
     // Fetch clusters
     const res = await authFetch("/api/people/clusters");
     if (!res) return;
     const clusters = await res.json();
-    
+
     // Populate dropdowns
-    selectMergeSrc.innerHTML = '<option value="">-- Select Source Cluster --</option>';
-    selectMergeDest.innerHTML = '<option value="">-- Select Destination Cluster --</option>';
-    
-    clusters.forEach(c => {
+    selectMergeSrc.innerHTML =
+      '<option value="">-- Select Source Cluster --</option>';
+    selectMergeDest.innerHTML =
+      '<option value="">-- Select Destination Cluster --</option>';
+
+    clusters.forEach((c) => {
       const optSrc = document.createElement("option");
       optSrc.value = c.label;
       optSrc.innerText = `${c.label} (${c.photo_count} photos)`;
       selectMergeSrc.appendChild(optSrc);
-      
+
       const optDest = document.createElement("option");
       optDest.value = c.label;
       optDest.innerText = `${c.label} (${c.photo_count} photos)`;
       selectMergeDest.appendChild(optDest);
     });
-    
+
     // Fetch all photos to get individual faces for split
     const resPhotos = await authFetch("/api/photos");
     if (!resPhotos) return;
     const photos = await resPhotos.json();
-    
+
     containerSplitCheckboxes.innerHTML = "";
     let faceCounter = 0;
-    photos.forEach(photo => {
-      photo.faces.forEach(face => {
+    photos.forEach((photo) => {
+      photo.faces.forEach((face) => {
         if (face.label !== "Unknown") {
           faceCounter++;
           const labelWrapper = document.createElement("label");
@@ -1055,9 +1115,10 @@ if (btnManageClusters) {
         }
       });
     });
-    
+
     if (faceCounter === 0) {
-      containerSplitCheckboxes.innerHTML = "<p style='font-size: 0.8rem; color: var(--text-muted);'>No labeled faces found in database to split.</p>";
+      containerSplitCheckboxes.innerHTML =
+        "<p style='font-size: 0.8rem; color: var(--text-muted);'>No labeled faces found in database to split.</p>";
     }
   });
 }
@@ -1076,8 +1137,10 @@ function switchManageTab(tab) {
   }
 }
 
-if (tabMergeBtn) tabMergeBtn.addEventListener("click", () => switchManageTab("merge"));
-if (tabSplitBtn) tabSplitBtn.addEventListener("click", () => switchManageTab("split"));
+if (tabMergeBtn)
+  tabMergeBtn.addEventListener("click", () => switchManageTab("merge"));
+if (tabSplitBtn)
+  tabSplitBtn.addEventListener("click", () => switchManageTab("split"));
 
 if (closeMergeSplitBtn) {
   closeMergeSplitBtn.addEventListener("click", () => {
@@ -1090,33 +1153,38 @@ if (btnSubmitMerge) {
   btnSubmitMerge.addEventListener("click", async () => {
     const src = selectMergeSrc.value;
     const dest = selectMergeDest.value;
-    
+
     if (!src || !dest) {
       alert("Please select both source and destination clusters.");
       return;
     }
-    
+
     if (src === dest) {
       alert("Source and destination clusters must be different.");
       return;
     }
-    
-    if (!confirm(`Are you sure you want to merge '${src}' into '${dest}'? This updates all associated faces.`)) return;
-    
+
+    if (
+      !confirm(
+        `Are you sure you want to merge '${src}' into '${dest}'? This updates all associated faces.`,
+      )
+    )
+      return;
+
     btnSubmitMerge.disabled = true;
     try {
       const res = await authFetch("/api/people/merge-clusters", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ src_label: src, dest_label: dest })
+        body: JSON.stringify({ src_label: src, dest_label: dest }),
       });
       if (!res) return;
       const data = await res.json();
-      
+
       if (!res.ok) {
         throw new Error(data.error || "Merge failed");
       }
-      
+
       alert(data.message);
       mergeSplitModal.style.display = "none";
       initializeDashboard();
@@ -1131,34 +1199,36 @@ if (btnSubmitMerge) {
 // 4. Submit Split
 if (btnSubmitSplit) {
   btnSubmitSplit.addEventListener("click", async () => {
-    const checkedBoxes = document.querySelectorAll('input[name="split-face-check"]:checked');
-    const faceIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+    const checkedBoxes = document.querySelectorAll(
+      'input[name="split-face-check"]:checked',
+    );
+    const faceIds = Array.from(checkedBoxes).map((cb) => parseInt(cb.value));
     const newName = inputSplitNewName.value.trim();
-    
+
     if (faceIds.length === 0) {
       alert("Please check at least one face to split.");
       return;
     }
-    
+
     if (!newName) {
       alert("Please enter a new cluster label.");
       return;
     }
-    
+
     btnSubmitSplit.disabled = true;
     try {
       const res = await authFetch("/api/people/split-cluster", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ face_ids: faceIds, new_label: newName })
+        body: JSON.stringify({ face_ids: faceIds, new_label: newName }),
       });
       if (!res) return;
       const data = await res.json();
-      
+
       if (!res.ok) {
         throw new Error(data.error || "Split failed");
       }
-      
+
       alert(data.message);
       mergeSplitModal.style.display = "none";
       initializeDashboard();
@@ -1170,4 +1240,389 @@ if (btnSubmitSplit) {
   });
 }
 
+/* ===================================== */
+/* 🚀 AI COMMAND CENTER JAVASCRIPT */
+/* ===================================== */
 
+const AGENTS = [
+  "coordinator",
+  "intent",
+  "search",
+  "facerecog",
+  "org",
+  "gmail",
+  "whatsapp",
+  "audit",
+];
+
+function getNode(name) {
+  return document.getElementById(`node-${name}`);
+}
+
+function getLine(name) {
+  return document.getElementById(`line-${name}`);
+}
+
+/* ===================================== */
+/* RESET */
+/* ===================================== */
+
+function resetNetwork() {
+  AGENTS.forEach((agent) => {
+    const node = getNode(agent);
+
+    if (!node) return;
+
+    node.classList.remove("active", "success", "error");
+
+    node.classList.add("idle");
+
+    const status = node.querySelector(".node-status");
+
+    if (status) status.textContent = "READY";
+  });
+
+  [
+    "intent",
+    "search",
+    "facerecog",
+    "org",
+    "gmail",
+    "whatsapp",
+    "audit",
+  ].forEach((lineId) => {
+    const line = getLine(lineId);
+
+    if (!line) return;
+
+    line.classList.remove("active", "success", "error");
+  });
+}
+
+/* ===================================== */
+/* ACTIVATE */
+/* ===================================== */
+
+function activateAgent(name, text = "PROCESSING") {
+  const node = getNode(name);
+
+  if (!node) return;
+
+  node.classList.remove("idle", "success", "error");
+
+  node.classList.add("active");
+
+  const status = node.querySelector(".node-status");
+
+  if (status) status.textContent = text;
+}
+
+function activateLine(name) {
+  const line = getLine(name);
+
+  if (!line) return;
+
+  line.classList.add("active");
+}
+
+/* ===================================== */
+/* SUCCESS */
+/* ===================================== */
+
+function successAgent(name) {
+  const node = getNode(name);
+
+  if (!node) return;
+
+  node.classList.remove("active");
+
+  node.classList.add("success");
+
+  const status = node.querySelector(".node-status");
+
+  if (status) status.textContent = "DONE";
+}
+
+function successLine(name) {
+  const line = getLine(name);
+
+  if (!line) return;
+
+  line.classList.remove("active");
+
+  line.classList.add("success");
+}
+
+/* ===================================== */
+/* ERROR */
+/* ===================================== */
+
+function errorAgent(name) {
+  const node = getNode(name);
+
+  if (!node) return;
+
+  node.classList.remove("active");
+
+  node.classList.add("error");
+
+  const status = node.querySelector(".node-status");
+
+  if (status) status.textContent = "FAILED";
+}
+
+function errorLine(name) {
+  const line = getLine(name);
+
+  if (!line) return;
+
+  line.classList.remove("active");
+
+  line.classList.add("error");
+}
+
+/* ===================================== */
+/* WAIT */
+/* ===================================== */
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/* ===================================== */
+/* LOGS */
+/* ===================================== */
+
+function appendAgentLog(message) {
+  const terminal = document.getElementById("logs-terminal");
+
+  if (!terminal) return;
+
+  terminal.innerHTML += `
+    <div class="log-line">
+      ${new Date().toLocaleTimeString()}
+      • ${message}
+    </div>
+  `;
+
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+/* ===================================== */
+/* WORKFLOW */
+/* ===================================== */
+
+async function runWorkflow(result) {
+  resetNetwork();
+
+  activateAgent("coordinator", "ROUTING");
+
+  appendAgentLog("Coordinator analyzing request...");
+
+  await sleep(500);
+
+  successAgent("coordinator");
+
+  /* Intent */
+
+  activateLine("intent");
+
+  activateAgent("intent");
+
+  appendAgentLog("Intent Agent extracting user goal...");
+
+  await sleep(700);
+
+  successLine("intent");
+
+  successAgent("intent");
+
+  /* Search */
+
+  activateLine("search");
+
+  activateAgent("search");
+
+  appendAgentLog("Search Agent retrieving photos...");
+
+  await sleep(800);
+
+  successLine("search");
+
+  successAgent("search");
+
+  /* Face */
+
+  if (result.used_face_agent) {
+    activateLine("facerecog");
+
+    activateAgent("facerecog");
+
+    appendAgentLog("Face AI matching embeddings...");
+
+    await sleep(1000);
+
+    successLine("facerecog");
+
+    successAgent("facerecog");
+  }
+
+  /* Organization */
+
+  if (result.used_organization) {
+    activateLine("org");
+
+    activateAgent("org");
+
+    appendAgentLog("Organization Agent grouping memories...");
+
+    await sleep(800);
+
+    successLine("org");
+
+    successAgent("org");
+  }
+
+  /* Gmail */
+
+  if (result.delivery_method === "gmail") {
+    activateLine("gmail");
+
+    activateAgent("gmail");
+
+    appendAgentLog("Email Agent delivering photos...");
+
+    await sleep(1000);
+
+    successLine("gmail");
+
+    successAgent("gmail");
+  }
+
+  /* WhatsApp */
+
+  if (result.delivery_method === "whatsapp") {
+    activateLine("whatsapp");
+
+    activateAgent("whatsapp");
+
+    appendAgentLog("WhatsApp Agent sending media...");
+
+    await sleep(1000);
+
+    successLine("whatsapp");
+
+    successAgent("whatsapp");
+  }
+
+  /* Audit */
+
+  activateLine("audit");
+
+  activateAgent("audit");
+
+  appendAgentLog("Audit Agent storing execution logs...");
+
+  await sleep(600);
+
+  successLine("audit");
+
+  successAgent("audit");
+
+  appendAgentLog("Workflow completed successfully.");
+}
+
+/* ===================================== */
+/* CHAT INTEGRATION */
+/* ===================================== */
+
+async function executeAgentCommand(prompt) {
+  const logsContainer = document.getElementById("agent-logs-container");
+
+  if (logsContainer) {
+    logsContainer.style.display = "block";
+  }
+
+  document.getElementById("logs-terminal").innerHTML = "";
+
+  try {
+    const response = await fetch("/api/agent", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+
+      body: JSON.stringify({
+        prompt,
+      }),
+    });
+
+    const result = await response.json();
+
+    await runWorkflow(result);
+
+    return result;
+  } catch (error) {
+    console.error(error);
+
+    appendAgentLog("Workflow execution failed.");
+
+    errorAgent("coordinator");
+
+    throw error;
+  }
+}
+
+/* ===================================== */
+/* CHAT BUTTON */
+/* ===================================== */
+
+const sendBtn = document.getElementById("chat-send-btn");
+
+if (sendBtn) {
+  sendBtn.addEventListener("click", async () => {
+    const input = document.getElementById("chat-input");
+
+    const prompt = input.value.trim();
+
+    if (!prompt) return;
+
+    input.value = "";
+
+    try {
+      await executeAgentCommand(prompt);
+    } catch (err) {
+      console.error(err);
+    }
+  });
+}
+
+/* ===================================== */
+/* ENTER KEY */
+/* ===================================== */
+
+const networkChatInput = document.getElementById("chat-input");
+
+if (networkChatInput) {
+  networkChatInput.addEventListener("keydown", async (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendBtn?.click();
+    }
+  });
+}
+
+/* ===================================== */
+/* DEMO */
+/* ===================================== */
+
+/*
+runWorkflow({
+  used_face_agent: true,
+  used_organization: true,
+  delivery_method: "gmail"
+});
+*/
