@@ -121,18 +121,6 @@
           </div>
         </nav>
 
-        <!-- Storage Widget -->
-        <div class="storage-widget">
-          <div class="storage-title">STORAGE & ANALYTICS</div>
-          <div class="storage-bar">
-            <div class="storage-bar-fill" style="width: 42%"></div>
-          </div>
-          <div class="storage-text">4.2 GB used / 10 GB</div>
-          <div class="storage-subtext" id="storage-details-btn">
-            5.8 GB free - Click for insights
-          </div>
-        </div>
-
         <button id="logout-btn" class="btn btn-secondary logout-btn">
           Sign Out
         </button>
@@ -761,7 +749,7 @@
             </div>
           </section>
 
-          <!-- View 3: Organized Photos -->
+          <!-- View 4: Organized Photos -->
           <section
             id="view-organized"
             class="view-section"
@@ -780,15 +768,35 @@
               class="panel chat-panel"
               style="flex: 1; display: flex; flex-direction: column"
             >
-              <div class="panel-title">🤖 AI Assistant Terminal</div>
+              <div class="chat-header">
+                <div>
+                  <div class="chat-title">🤖 Pixel Mind Assistant</div>
+
+                  <div class="chat-subtitle">
+                    Search, organize and share your memories
+                  </div>
+                </div>
+
+                <button id="clear-chat-btn" class="clear-chat-btn">
+                  Clear Chat
+                </button>
+              </div>
               <div
                 class="chat-thread"
                 id="chat-thread"
                 style="flex: 1; max-height: none"
               >
-                <div class="chat-msg agent">
-                  Hello! I am your photo assistant. Tell me what to retrieve or
-                  send (e.g., "Show Rahul's photos" or "Send Priya's photos").
+                <div class="chat-msg system">
+                  <div class="system-icon">👋</div>
+
+                  <div>
+                    <strong>Welcome to Pixel Mind</strong>
+
+                    <p>
+                      Ask me anything about your memories. Example: "Show Ram
+                      Charan photos"
+                    </p>
+                  </div>
                 </div>
               </div>
 

@@ -57,6 +57,7 @@ const chatInput = document.getElementById("chat-input");
 const chatSendBtn = document.getElementById("chat-send-btn");
 const logsContainer = document.getElementById("agent-logs-container");
 const logsTerminal = document.getElementById("logs-terminal");
+const clearChatBtn = document.getElementById("clear-chat-btn");
 
 // Modals
 const labelModal = document.getElementById("label-modal");
@@ -168,6 +169,28 @@ logoutBtn.addEventListener("click", () => {
   localStorage.removeItem("drishyamitra_token");
   localStorage.removeItem("drishyamitra_username");
   updateScreenVisibility();
+});
+
+clearChatBtn?.addEventListener("click", () => {
+  if (!confirm("Clear this conversation?")) return;
+
+  chatThread.innerHTML = `
+    <div class="chat-msg system">
+      <div class="system-icon">👋</div>
+
+      <div>
+        <strong>Welcome to Pixel Mind</strong>
+
+        <p>
+          Ask me anything about your memories.
+        </p>
+      </div>
+    </div>
+  `;
+
+  logsTerminal.innerHTML = "";
+
+  logsContainer.style.display = "none";
 });
 
 // Helper for authenticated fetch API requests
@@ -1656,7 +1679,6 @@ function renderNode(node, level = 0) {
   const children = (node.children || [])
     .map((child) => renderNode(child, level + 1))
     .join("");
-
   return `
   <div class="folder-card level-${level}">
     <div class="folder-header">
@@ -1664,16 +1686,18 @@ function renderNode(node, level = 0) {
 
       <div class="folder-icon">📁</div>
 
-      <span class="folder-name">
+      <div class="folder-name">
         ${node.name}
-      </span>
+      </div>
 
-      <span class="folder-count">
+      <div class="folder-count">
         ${(node.children || []).length}
-      </span>
+      </div>
     </div>
 
-    <div class="folder-body">
+    <div class="folder-body ${
+      node.children?.some((c) => c.type === "photo") ? "photos-grid" : ""
+    }">
       ${children}
     </div>
   </div>
