@@ -221,7 +221,7 @@ body {
 }
 
 .nav-item:hover {
-  background: #f1f5f9;
+  background: var(--bg-card);
   color: var(--text-primary);
 }
 
@@ -298,7 +298,7 @@ body {
 
 #top-search {
   width: 100%;
-  background: #f1f5f9;
+  background: var(--bg-primary);
   border: 1px solid transparent;
   border-radius: 20px;
   padding: 0.55rem 2.5rem;
@@ -324,7 +324,7 @@ body {
   height: 2rem;
   border-radius: 50%;
   background: var(--accent-purple);
-  color: white;
+  color: var(--accent-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -529,12 +529,12 @@ body {
 }
 
 .album-tag:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+  background: var(--bg-primary);
+  border-color: var(--border-color);
 }
 
 .tag-count {
-  background: #e2e8f0;
+  background: var(--bg-primary);
   color: var(--text-primary);
   font-size: 0.75rem;
   font-weight: 600;
@@ -638,7 +638,7 @@ body {
   border-radius: 50%;
   flex-shrink: 0;
   background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-  color: #fff;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -657,7 +657,6 @@ body {
   color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .contact-details {
@@ -666,7 +665,6 @@ body {
   font-size: 0.82rem;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .contact-action {
@@ -674,7 +672,7 @@ body {
   height: 40px;
   border-radius: 12px;
   border: none;
-  background: #eef2ff;
+  background: var(--bg-card);
   color: var(--accent-purple);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -682,7 +680,7 @@ body {
 
 .contact-action:hover {
   background: var(--accent-purple);
-  color: white;
+  color: var(--text-primary);
 }
 
 /* ==========================================
@@ -729,7 +727,7 @@ body {
 
   border-radius: 20px;
 
-  background: #eef2ff;
+  background: var(--bg-card);
   color: var(--accent-purple);
 
   font-size: 2rem;
@@ -1027,12 +1025,11 @@ body {
   left: 8px;
   background: rgba(15, 23, 42, 0.9);
   backdrop-filter: blur(10px);
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.65rem;
   font-weight: 600;
   padding: 4px 8px;
   border-radius: 999px;
-  white-space: nowrap;
   pointer-events: none;
 }
 
@@ -1068,7 +1065,7 @@ body {
 
 .delete-photo-btn:hover {
   background: #ef4444;
-  color: #ffffff;
+  color: var(--text-secondary);
   transform: scale(1.08);
 }
 
@@ -1090,7 +1087,7 @@ body {
   color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  var(--text-primary)-space: nowrap;
 }
 
 /* ==========================================
@@ -1107,7 +1104,7 @@ body {
 .face-tag {
   padding: 4px 10px;
   border-radius: 999px;
-  background: #eef2ff;
+  background: var(--bg-card);
   color: #4f46e5;
   font-size: 0.72rem;
   font-weight: 600;
@@ -1117,7 +1114,7 @@ body {
 
 .face-tag:hover {
   background: #4f46e5;
-  color: #ffffff;
+  color: var(--text-secondary);
 }
 
 /* ==========================================
@@ -1138,7 +1135,7 @@ body {
   height: 32px;
   border-radius: 50%;
   background: var(--accent-purple);
-  color: #ffffff;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1262,7 +1259,7 @@ body {
 
 .clear-chat-btn:hover {
   background: #dc2626;
-  color: white;
+  color: var(--text-primary);
 }
 
 /* Thread */
@@ -1553,7 +1550,7 @@ body {
 
 .btn-primary {
   background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-  color: white;
+  color: var(--text-primary);
 }
 
 .btn-secondary {
@@ -1658,12 +1655,11 @@ body {
   bottom: 18px;
   right: 16px;
   z-index: 2;
-  color: #fff;
+  color: var(--text-primary);
   font-size: 1rem;
   font-weight: 700;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* Photo Count */
@@ -1672,7 +1668,7 @@ body {
   left: 16px;
   bottom: 46px;
   z-index: 2;
-  color: #fff;
+  color: var(--text-primary);
   background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -2330,7 +2326,7 @@ body {
   color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  var(--text-primary)-space: nowrap;
 }
 
 .photo-path {
@@ -2339,5 +2335,5 @@ body {
   color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  var(--text-primary)-space: nowrap;
 }
