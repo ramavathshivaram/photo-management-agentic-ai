@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drishyamitra - AI Photos Command Center</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Auth Screen (Visible by default if not logged in) -->
+  <div id="auth-screen" class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo-icon">📸</div>
+        <h2>Drishyamitra</h2>
+        <p id="auth-title">AI Photo Command Center Login</p>
+      </div>
+      <form id="login-form">
+        <div class="input-group">
+          <label class="input-label" for="username">Username</label>
+          <input type="text" id="username" class="form-input" placeholder="e.g. admin" required autocomplete="username">
+        </div>
+        <div class="input-group">
+          <label class="input-label" for="password">Password</label>
+          <input type="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" id="auth-submit-btn" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Sign In</button>
+        <div id="login-error" class="error-msg" style="display: none; margin-top: 1rem; text-align: center;"></div>
+        <div id="login-success" style="display: none; margin-top: 1rem; text-align: center; color: #10b981; font-size: 0.85rem; font-weight: 500;"></div>
+        
+        <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-secondary);">
+          <span id="auth-toggle-msg">Don't have an account?</span>
+          <a href="#" id="auth-toggle-link" style="color: var(--accent-blue, #3b82f6); font-weight: 600; text-decoration: none; margin-left: 0.25rem;">Register</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Dashboard Wrapper -->
+  <div id="app-dashboard" class="dashboard-wrapper" style="display: none;">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-container">
+          <div class="logo-icon-rounded">📸</div>
+          <h3>Drishyamitra</h3>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="nav-menu">
+        <div class="nav-item active" data-view="home">
+          <span class="nav-icon">🏠</span> Home
+        </div>
+        <div class="nav-item" data-view="photos">
+          <span class="nav-icon">🖼️</span> Photos
+        </div>
+        <div class="nav-item" data-view="people">
+          <span class="nav-icon">👥</span> People
+        </div>
+        <div class="nav-item" data-view="chat">
+          <span class="nav-icon">🤖</span> AI Chat
+        </div>
+        <div class="nav-item" data-view="share">
+          <span class="nav-icon">↗️</span> Share
+        </div>
+      </nav>
+
+      <!-- Storage Widget -->
+      <div class="storage-widget">
+        <div class="storage-title">STORAGE & ANALYTICS</div>
+        <div class="storage-bar">
+          <div class="storage-bar-fill" style="width: 42%;"></div>
+        </div>
+        <div class="storage-text">4.2 GB used / 10 GB</div>
+        <div class="storage-subtext" id="storage-details-btn">5.8 GB free - Click for insights</div>
+      </div>
+
+      <button id="logout-btn" class="btn btn-secondary logout-btn">Sign Out</button>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-container">
+      
+      <!-- Top Header Bar -->
+      <header class="top-bar">
+        <div class="search-wrapper">
+          <span class="search-icon-glass">🔍</span>
+          <input type="text" id="top-search" placeholder="Search your photos with AI... 'Priya at wedding, 2024'">
+          <span class="search-mic-icon">🎙️</span>
+        </div>
+        <div class="profile-container">
+          <div class="profile-avatar">A</div>
+        </div>
+      </header>
+
+      <!-- View Sections -->
+      <main class="main-content">
+        
+        <!-- View 1: Home Dashboard -->
+        <section id="view-home" class="view-section">
+          
+
+
+          <!-- Metrics Panel -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon-box blue-glow">🖼️</div>
+              <div class="metric-info">
+                <h4 id="metric-total-photos">7</h4>
+                <p>Total Photos</p>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon-box green-glow">👤</div>
+              <div class="metric-info">
+                <h4 id="metric-total-people">7</h4>
+                <p>People Tagged</p>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon-box yellow-glow">↗️</div>
+              <div class="metric-info">
+                <h4 id="metric-shared-deliveries">0</h4>
+                <p>Shared Deliveries</p>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon-box red-glow">❓</div>
+              <div class="metric-info">
+                <h4 id="metric-untagged-faces">0</h4>
+                <p>Untagged Faces</p>
+              </div>
+            </div>
+            <!-- Keep hidden fields for existing JS metrics bindings to prevent crashes -->
+            <span id="metric-emails" style="display: none;">0</span>
+            <span id="metric-whatsapp" style="display: none;">0</span>
+          </div>
+
+          <!-- Smart Albums -->
+          <div class="section-header-row">
+            <h3 class="section-title">📂 Smart Albums</h3>
+          </div>
+          <div class="albums-grid">
+            <div class="album-tag" data-search="birthday">🎂 Birthdays <span class="tag-count">0</span></div>
+            <div class="album-tag" data-search="event">🎟️ Events <span class="tag-count">0</span></div>
+            <div class="album-tag" data-search="trip">✈️ Family Trips <span class="tag-count">0</span></div>
+            <div class="album-tag" data-search="diwali">💥 Festivals <span class="tag-count">0</span></div>
+            <div class="album-tag" data-search="wedding">💍 Weddings <span class="tag-count">0</span></div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="section-header-row">
+            <h3 class="section-title">⚡ Quick Actions</h3>
+          </div>
+          <div class="quick-actions-grid">
+            <div class="action-card action-upload" id="qa-upload">
+              <div class="action-icon">📤</div>
+              <div class="action-label">Upload Photos</div>
+            </div>
+            <div class="action-card action-search" id="qa-search">
+              <div class="action-icon">🔍</div>
+              <div class="action-label">Search by Face</div>
+            </div>
+            <div class="action-card action-ask" id="qa-ask">
+              <div class="action-icon">💬</div>
+              <div class="action-label">Ask AI</div>
+            </div>
+            <div class="action-card action-analytics" id="qa-analytics">
+              <div class="action-icon">📊</div>
+              <div class="action-label">Analytics</div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- View 2: Photos Gallery -->
+        <section id="view-photos" class="view-section" style="display: none;">
+          
+          <!-- Uploader Panel -->
+          <div class="panel">
+            <div class="panel-title">📤 Upload Photos to Cloudinary</div>
+            <div class="upload-zone" id="upload-zone">
+              <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+              </svg>
+              <p>Drag and drop multiple photos here, or click to browse</p>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Supports JPG, PNG</span>
+              <input type="file" id="file-input" multiple style="display: none;" accept="image/*">
+            </div>
+            <div id="upload-progress-container" class="upload-progress-container" style="display: none;">
+              <div class="progress-bar">
+                <div id="upload-progress-fill" class="progress-fill" style="width: 0%;"></div>
+              </div>
+              <div id="upload-status-text" style="font-size: 0.8rem; margin-top: 0.25rem; text-align: center;">Uploading...</div>
+            </div>
+          </div>
+
+          <!-- Gallery Panel -->
+          <div class="panel" style="flex: 1; display: flex; flex-direction: column;">
+            <div class="gallery-header">
+              <div class="panel-title" style="border: none; padding: 0;">🖼️ Photos Gallery</div>
+              
+              <!-- Filter bar -->
+              <div class="filter-bar" style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="text" id="filter-person" placeholder="Filter by Name (e.g. Priya)" class="filter-input">
+                <input type="date" id="filter-date" class="filter-input">
+                <button type="button" id="face-search-btn" class="btn btn-secondary btn-small">🔍 Search by Face</button>
+                <input type="file" id="face-search-file" style="display: none;" accept="image/*">
+                <button id="clear-filters-btn" class="btn btn-secondary btn-small">Clear</button>
+              </div>
+            </div>
+            
+            <div class="gallery-wrapper">
+              <div id="face-match-status" class="face-match-status-bar" style="display: none;">
+                <span class="status-icon">👤</span>
+                <span class="status-text">Face Search Active: Showing matching photos</span>
+                <button id="clear-face-search-btn" class="btn btn-secondary btn-small" style="margin-left: auto; padding: 0.2rem 0.5rem; font-size: 0.75rem;">Reset Search</button>
+              </div>
+              <div class="gallery-grid" id="gallery-grid"></div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- View 3: Contacts & Clusters -->
+        <section id="view-people" class="view-section" style="display: none;">
+          <div class="panel">
+            <div class="panel-title">👥 Contact Directory</div>
+            <form id="contact-form" class="sidebar-form">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem;">
+                <input type="text" id="contact-name" class="form-input" placeholder="Name (e.g. Rahul)" required>
+                <input type="email" id="contact-email" class="form-input" placeholder="Email Address" required>
+                <input type="text" id="contact-whatsapp" class="form-input" placeholder="WhatsApp Number" required>
+              </div>
+              <button type="submit" class="btn btn-primary" style="margin-top: 0.75rem; align-self: flex-start;">Add/Update Contact</button>
+            </form>
+          </div>
+
+          <div class="panel" style="flex: 1;">
+            <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+              <span>👥 Recognized Face Groups</span>
+              <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+                <button id="btn-run-clustering" class="btn btn-secondary btn-small">Run Clustering</button>
+                <button id="btn-show-evaluation" class="btn btn-secondary btn-small">Accuracy Metrics</button>
+                <button id="btn-manage-clusters" class="btn btn-secondary btn-small">Merge/Split</button>
+                <button id="btn-organize-photos" class="btn btn-primary btn-small">Organize Folders</button>
+              </div>
+            </div>
+            <div class="clusters-grid" id="clusters-list"></div>
+          </div>
+
+          <div class="panel" style="flex: 1;">
+            <div class="panel-title">📇 Saved Contacts</div>
+            <div class="contacts-grid" id="contacts-list"></div>
+          </div>
+        </section>
+
+
+        <!-- View 4: Chatbot -->
+        <section id="view-chat" class="view-section" style="display: none; height: 100%; min-height: 480px;">
+          <div class="panel chat-panel" style="flex: 1; display: flex; flex-direction: column;">
+            <div class="panel-title">🤖 AI Assistant Terminal</div>
+            <div class="chat-thread" id="chat-thread" style="flex: 1; max-height: none;">
+              <div class="chat-msg agent">
+                Hello! I am your photo assistant. Tell me what to retrieve or send (e.g., "Show Rahul's photos" or "Send Priya's photos").
+              </div>
+            </div>
+            
+            <!-- System Logs -->
+            <div class="agent-logs-container" id="agent-logs-container" style="display: none;">
+              <div class="logs-title">System Execution Logs</div>
+              <div class="logs-terminal" id="logs-terminal"></div>
+            </div>
+
+            <div class="chat-input-wrapper">
+              <input type="text" id="chat-input" placeholder="Type a command..." autocomplete="off">
+              <button id="chat-send-btn" class="chat-send-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- View 5: History -->
+        <section id="view-share" class="view-section" style="display: none;">
+          <div class="panel">
+            <div class="panel-title">📜 Dispatch Delivery Logs</div>
+            <div class="table-container">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Method</th>
+                    <th>Recipient</th>
+                    <th>Photos Sent</th>
+                    <th>Status</th>
+                    <th>Delivery Details</th>
+                  </tr>
+                </thead>
+                <tbody id="delivery-history-rows"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Face Label Modal -->
+  <div id="label-modal" class="modal-wrapper" style="display: none;">
+    <div class="modal-card">
+      <h3>Label Face</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Map this face to a recognized person cluster.</p>
+      <input type="hidden" id="modal-face-id">
+      <input type="text" id="modal-label-input" class="form-input" placeholder="Enter name (e.g. Rahul)" required>
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+        <button id="close-modal-btn" class="btn btn-secondary btn-small">Cancel</button>
+        <button id="submit-label-btn" class="btn btn-primary btn-small">Save & Propagate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytics Insights Modal -->
+  <div id="analytics-modal" class="modal-wrapper" style="display: none;">
+    <div class="modal-card" style="max-width: 480px;">
+      <h3>📊 Storage & Analytics Insights</h3>
+      <div style="margin-top: 1rem; font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary);">
+        <p><strong>Cloud Storage Plan:</strong> Free Tier (10 GB limits)</p>
+        <p><strong>Storage Space Used:</strong> 4.2 GB (42%)</p>
+        <p><strong>Available Free Space:</strong> 5.8 GB</p>
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 0.75rem 0;">
+        <p>💡 <strong>Optimization Tip:</strong> Cloudinary hosts all media files securely in the cloud. Bounding box facial coordinates are indexed as SQLite metadata, utilizing less than 1% of database capacity.</p>
+      </div>
+      <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+        <button id="close-analytics-btn" class="btn btn-primary btn-small">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Merge/Split Modal -->
+  <div id="merge-split-modal" class="modal-wrapper" style="display: none;">
+    <div class="modal-card">
+      <h3>👥 Manage Face Clusters</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Manually merge clusters together, or split faces out.</p>
+      
+      <!-- Tab selectors -->
+      <div style="display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+        <button id="tab-merge-btn" class="btn btn-secondary btn-small active" style="flex: 1;">Merge Clusters</button>
+        <button id="tab-split-btn" class="btn btn-secondary btn-small" style="flex: 1;">Split Faces</button>
+      </div>
+      
+      <!-- Merge Section -->
+      <div id="section-merge-cluster">
+        <div class="input-group">
+          <label class="input-label" for="merge-src">Source Cluster (to merge from)</label>
+          <select id="merge-src" class="form-input"></select>
+        </div>
+        <div class="input-group" style="margin-top: 0.75rem;">
+          <label class="input-label" for="merge-dest">Destination Cluster (to merge into)</label>
+          <select id="merge-dest" class="form-input"></select>
+        </div>
+        <button id="submit-merge-btn" class="btn btn-primary btn-small" style="width: 100%; margin-top: 1rem;">Merge Clusters</button>
+      </div>
+      
+      <!-- Split Section -->
+      <div id="section-split-cluster" style="display: none;">
+        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem;">Select faces from the database to split into a new cluster name.</p>
+        <div class="input-group">
+          <label class="input-label" for="split-faces-checkboxes">Faces to split</label>
+          <div id="split-faces-checkboxes" style="max-height: 120px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; padding: 0.5rem; background: var(--bg-card); display: flex; flex-direction: column; gap: 0.35rem;"></div>
+        </div>
+        <div class="input-group" style="margin-top: 0.75rem;">
+          <label class="input-label" for="split-new-name">New Cluster Name</label>
+          <input type="text" id="split-new-name" class="form-input" placeholder="e.g. Person_5">
+        </div>
+        <button id="submit-split-btn" class="btn btn-primary btn-small" style="width: 100%; margin-top: 1rem;">Split Faces</button>
+      </div>
+      
+      <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+        <button id="close-merge-split-btn" class="btn btn-secondary btn-small">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Evaluation Modal -->
+  <div id="evaluation-modal" class="modal-wrapper" style="display: none;">
+    <div class="modal-card" style="max-width: 480px;">
+      <h3>📊 Clustering Accuracy & Evaluation</h3>
+      <div id="evaluation-content" style="margin-top: 1rem; font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary);">
+        <p>Loading clustering accuracy metrics...</p>
+      </div>
+      <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+        <button id="close-evaluation-btn" class="btn btn-primary btn-small">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
